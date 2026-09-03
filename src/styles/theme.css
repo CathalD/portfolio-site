@@ -1,0 +1,96 @@
+/*
+ * theme.css — the single source of truth for colour on this site.
+ *
+ * THIS IS THE ONLY FILE IN THE REPOSITORY ALLOWED TO CONTAIN A HEX VALUE.
+ * Everything else — components, layouts, pages, scripts — refers to these
+ * custom properties by name. If you need a colour that is not here, add it
+ * here first and give it a semantic name (what it is FOR, not what it looks
+ * like). `--color-ink-muted` survives a redesign; `--color-grey-600` does not.
+ *
+ * There is no dark theme, deliberately. See CLAUDE.md, "Things that look
+ * wrong but are deliberate".
+ *
+ * Contrast ratios in the comments below are verified by
+ * `npm run check:a11y`, which parses this file. If you change a value and
+ * the ratio drops below the WCAG 2.1 AA threshold, the build fails.
+ */
+
+/*
+ * Colour tokens live in Tailwind's `@theme` block: this emits them as CSS
+ * custom properties on :root AND generates matching utilities (bg-paper,
+ * text-ink, border-rule, ...). `static` guarantees every variable is emitted
+ * even if no utility happens to use it, so `var(--color-ink)` is always safe
+ * in hand-written CSS.
+ */
+@theme static {
+  /* ---------------------------------------------------------------- *
+   * Surfaces — warm neutrals. The site should read as paper, not screen.
+   * ---------------------------------------------------------------- */
+  --color-paper: #fbfaf7; /* page background */
+  --color-surface: #f4f2ec; /* cards, pull quotes, inset blocks */
+  --color-surface-raised: #ffffff; /* the rare element that sits above paper */
+
+  /* ---------------------------------------------------------------- *
+   * Ink — text. Warm blacks and greys, never pure #000.
+   * ---------------------------------------------------------------- */
+  --color-ink: #1a1917; /* body text, headings */
+  --color-ink-muted: #56524a; /* metadata, captions, dates */
+  --color-ink-faint: #6e6961; /* the quietest readable text; AA at 16px+ */
+
+  /* ---------------------------------------------------------------- *
+   * Rules — hairline borders. Preferred over shadows everywhere.
+   * ---------------------------------------------------------------- */
+  --color-rule: #ddd8ce; /* default hairline */
+  --color-rule-strong: #8f8a7e; /* emphasis, active states */
+
+  /* ---------------------------------------------------------------- *
+   * Accent — subtle greens. Links and primary actions.
+   * ---------------------------------------------------------------- */
+  --color-accent: #2c5844; /* links, primary text accent */
+  --color-accent-strong: #1e3f30; /* hover / active */
+  --color-accent-wash: #e8eeea; /* tinted background blocks */
+
+  /* ---------------------------------------------------------------- *
+   * Focus — must be visible against BOTH paper and accent-wash.
+   * Never remove the outline; change this instead.
+   * ---------------------------------------------------------------- */
+  --color-focus: #8a4b12; /* warm amber-brown: distinct from accent green */
+
+  /* ---------------------------------------------------------------- *
+   * Status — for StatusBadge (projects). Muted, never traffic-light.
+   * ---------------------------------------------------------------- */
+  --color-status-taking-off: #7a5314;
+  --color-status-in-progress: #2c5844;
+  --color-status-completed: #3f4a52;
+  --color-status-archived: #6e6961;
+
+  /* ---------------------------------------------------------------- *
+   * Scrim — the homepage hero overlay. A SOLID colour at high alpha,
+   * not a gradient: gradients make contrast unverifiable, and the AA
+   * requirement over a photograph is non-negotiable.
+   * ---------------------------------------------------------------- */
+  --color-scrim: #16211c;
+  --color-on-scrim: #f6f5f1;
+  --color-on-scrim-muted: #d6dcd7;
+}
+
+/*
+ * Non-colour tokens. These are plain custom properties: they do not map onto
+ * a Tailwind namespace, so they are referenced directly as var(--measure) etc.
+ */
+:root {
+  /* Opacity of the hero scrim. Paired with --color-scrim above. */
+  --scrim-opacity: 0.72;
+
+  /* Long-form measure. The spec caps this at 68-72 characters. */
+  --measure: 68ch;
+  /* Wider measure for index/listing pages that are not continuous prose. */
+  --measure-wide: 78rem;
+
+  /* Sharp edges only. 2px is the maximum this site ever uses. */
+  --radius: 2px;
+
+  /* Transitions: hover/focus only, under 200ms. Disabled entirely under
+     prefers-reduced-motion (see global.css). */
+  --transition: 150ms ease-out;
+}

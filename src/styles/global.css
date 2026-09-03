@@ -1,0 +1,223 @@
+/*
+ * global.css — Tailwind entry point and base element styling.
+ *
+ * Imported once, by BaseHead.astro, so it reaches every page.
+ *
+ * Colour NEVER appears here as a literal. Every colour is a token from
+ * theme.css. See CLAUDE.md.
+ */
+
+@import 'tailwindcss';
+@import './theme.css';
+
+/* --------------------------------------------------------------------- *
+ * Typography scale.
+ *
+ * Source Serif 4 for anything that is read continuously; Inter for anything
+ * that is scanned (navigation, metadata, labels, buttons). Both are variable
+ * fonts, self-hosted from src/assets/fonts/ and registered in astro.config.mjs
+ * — there is no webfont CDN in this project, deliberately.
+ * --------------------------------------------------------------------- */
+
+@theme static {
+  --font-serif: var(--font-source-serif), Charter, 'Bitstream Charter', Cambria, Georgia, serif;
+  --font-sans:
+    var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+
+/* --------------------------------------------------------------------- *
+ * Base elements.
+ *
+ * WHY THIS IS WRAPPED IN `@layer base`, and why removing the wrapper breaks
+ * the site in a way that is hard to diagnose:
+ *
+ * Tailwind emits its utilities inside `@layer utilities`. In the CSS cascade,
+ * ANY un-layered rule beats ANY layered rule, regardless of specificity. So an
+ * un-layered `a { text-decoration: underline }` here would defeat every
+ * `no-underline` utility in every component — navigation, cards, the footer —
+ * and no amount of specificity in the component would win.
+ *
+ * Putting these in `@layer base` restores the expected order: base styles are
+ * the default, utilities override them.
+ * --------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    /* Anchor links (the project table of contents) should not tuck headings
+       under the top of the viewport. */
+    scroll-padding-block-start: 2rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (min-width: 40rem) {
+    body {
+      font-size: 1.125rem;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  /* --------------------------------------------------------------------- *
+   * Links.
+   *
+   * Underlines stay on. Removing them from body links is an accessibility
+   * regression, not a style choice — colour alone must never be the only
+   * signal that something is a link (WCAG 1.4.1).
+   * --------------------------------------------------------------------- */
+
+  a {
+    color: var(--color-accent);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
+    transition:
+      color var(--transition),
+      text-decoration-color var(--transition);
+  }
+
+  a:hover {
+    color: var(--color-accent-strong);
+    text-decoration-thickness: 2px;
+  }
+
+  /* --------------------------------------------------------------------- *
+   * Focus.
+   *
+   * DO NOT REMOVE. Every interactive element on this site must show a visible
+   * focus ring when reached by keyboard. `:focus-visible` means mouse users
+   * never see it, so there is no cosmetic reason to take it away.
+   * --------------------------------------------------------------------- */
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+    border-radius: var(--radius);
+  }
+
+  /* --------------------------------------------------------------------- *
+   * Media.
+   * --------------------------------------------------------------------- */
+
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  hr {
+    border: 0;
+    border-block-start: 1px solid var(--color-rule);
+  }
+
+  ::selection {
+    background-color: var(--color-accent-wash);
+    color: var(--color-ink);
+  }
+}
+
+/* --------------------------------------------------------------------- *
+ * Skip link.
+ *
+ * Visually hidden until it receives keyboard focus, then it appears in the
+ * top-left corner. It is the first focusable thing on every page, and it is
+ * the difference between reaching the content in one key press and tabbing
+ * through the whole navigation on every page.
+ *
+ * WHY THIS IS HAND-WRITTEN RATHER THAN `sr-only focus:not-sr-only` UTILITIES:
+ * that pattern depends on the relative order Tailwind emits two utility rules
+ * in, which is not something this site should bet an accessibility feature on
+ * — it silently stopped working once already during Stage 1, and a skip link
+ * that fails to appear fails invisibly. These rules are deliberately left
+ * UN-LAYERED so nothing can override them.
+ * --------------------------------------------------------------------- */
+
+.skip-link {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: 100;
+  /* Clipped to nothing, but still in the accessibility tree and focus order. */
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link:focus {
+  width: auto;
+  height: auto;
+  margin: 0.75rem;
+  padding: 0.6rem 1rem;
+  overflow: visible;
+  clip-path: none;
+  border: 1px solid var(--color-rule-strong);
+  border-radius: var(--radius);
+  background-color: var(--color-surface-raised);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+/* --------------------------------------------------------------------- *
+ * Reduced motion.
+ *
+ * This site has no scroll-triggered animation by design; the only motion is
+ * hover/focus transitions. Users who ask for less motion get none.
+ * --------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------- *
+ * Print.
+ *
+ * Long-form writing on this site is often read as a reference. Make it
+ * print sanely: no navigation chrome, links resolved to their URLs.
+ * --------------------------------------------------------------------- */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+}
