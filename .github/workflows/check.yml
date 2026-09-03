@@ -1,0 +1,38 @@
+# Runs the full quality gate on every pull request and every push to main.
+#
+# This is the same `npm run check` that runs locally, deliberately — CI should
+# never be able to pass something that fails on the maintainer's machine, or
+# the other way round.
+
+name: check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancel an in-progress run when new commits are pushed to the same branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Reads .nvmrc, so CI and local development cannot drift apart.
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run all checks
+        # typecheck, lint, format, build, then the validators that read dist/
+        run: npm run check
