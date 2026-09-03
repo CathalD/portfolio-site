@@ -1,0 +1,28 @@
+---
+/*
+ * /404 — not found.
+ *
+ * This page should be rare by design: URLs on this site are permanent and
+ * nothing is ever deleted or moved. If you are seeing it for a URL that used
+ * to work, that is a bug, not a redirect that was forgotten. See CLAUDE.md,
+ * "The permanent URL contract".
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found" description="That page does not exist." noindex={true}>
+  <div class="mx-auto max-w-[var(--measure)]">
+    <h1 class="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Page not found</h1>
+
+    <p class="mt-4 text-lg text-ink-muted">
+      There is nothing at this address. Pages on this site are not moved or deleted, so a link that
+      used to work should still work — if one does not, it is worth reporting.
+    </p>
+
+    <ul class="mt-8 flex flex-wrap gap-x-6 gap-y-2 font-sans">
+      <li><a href="/">Home</a></li>
+      <li><a href="/writing/">Writing</a></li>
+    </ul>
+  </div>
+</BaseLayout>

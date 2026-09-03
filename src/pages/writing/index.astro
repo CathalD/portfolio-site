@@ -1,0 +1,34 @@
+---
+/*
+ * /writing — index of all published writing, newest first.
+ *
+ * Reads the collection through getPublished(), never getCollection(), so
+ * drafts and fixtures cannot leak into a production build. See
+ * src/lib/content.ts.
+ */
+
+import CollectionLayout from '../../layouts/CollectionLayout.astro';
+import WritingCard from '../../components/WritingCard.astro';
+import { getPublished, byDateDesc } from '../../lib/content.ts';
+import { readingTime } from '../../lib/reading-time.ts';
+
+const entries = byDateDesc(await getPublished('writing'), (entry) => entry.data.publishedAt);
+
+/* Reading time is computed from the raw Markdown, never read from frontmatter.
+   See src/lib/reading-time.ts. */
+const items = entries.map((entry) => ({
+  entry,
+  readingTime: readingTime(entry.body ?? ''),
+}));
+---
+
+<CollectionLayout
+  title="Writing"
+  description="Essays, technical notes, teaching material and reviews."
+  count={items.length}
+  emptyMessage="No writing has been published yet."
+>
+  <div class="flex flex-col gap-8">
+    {items.map(({ entry, readingTime }) => <WritingCard entry={entry} readingTime={readingTime} />)}
+  </div>
+</CollectionLayout>

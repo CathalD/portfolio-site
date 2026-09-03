@@ -1,0 +1,76 @@
+---
+/*
+ * BaseLayout — the HTML shell. Every page on this site composes this, directly
+ * or through another layout. There is no other place that writes <html>.
+ *
+ * Used by: ProseLayout, CollectionLayout, and pages with bespoke bodies
+ * (the home page).
+ *
+ * Provides: <head> via BaseHead, the skip link, Nav, the <main> landmark, and
+ * Footer. If you find yourself copying any of that into a page, stop — extend
+ * this instead.
+ */
+
+import BaseHead from '../components/BaseHead.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_LOCALE } from '../lib/site.ts';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  publishedAt?: Date;
+  updatedAt?: Date;
+  /**
+   * Set false when the page supplies its own <main> (the home page does, so
+   * that its hero can run full-bleed).
+   */
+  wrapInMain?: boolean;
+  /** Extra classes on the <main> wrapper. */
+  mainClass?: string;
+}
+
+const { wrapInMain = true, mainClass, ...head } = Astro.props;
+---
+
+<!doctype html>
+<html lang={SITE_LOCALE}>
+  <head>
+    <BaseHead {...head} />
+  </head>
+
+  <body class="flex min-h-screen flex-col">
+    <!--
+      Skip link. Visually hidden until focused, then it appears in the top-left.
+      This is the first thing a keyboard or screen-reader user meets, and it is
+      the difference between reaching the content in one key press and tabbing
+      through the whole navigation on every page.
+    -->
+    <a href="#main" class="skip-link no-print">Skip to content</a>
+
+    <Nav />
+
+    {
+      wrapInMain ? (
+        <main
+          id="main"
+          class:list={[
+            'mx-auto w-full max-w-[var(--measure-wide)] flex-1 px-5 py-12 sm:px-8 sm:py-16',
+            mainClass,
+          ]}
+        >
+          <slot />
+        </main>
+      ) : (
+        <div class="flex-1">
+          <slot />
+        </div>
+      )
+    }
+
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,70 @@
+---
+/*
+ * /writing/[slug] — a single piece of writing.
+ *
+ * The slug is the filename in content/writing/ and it is PERMANENT. If a
+ * title changes, add the old one to `formerTitles` in frontmatter; do not
+ * rename the file. See CLAUDE.md, "The permanent URL contract".
+ */
+
+import { render, type CollectionEntry } from 'astro:content';
+import ProseLayout from '../../layouts/ProseLayout.astro';
+import { getPublished } from '../../lib/content.ts';
+import { readingTime } from '../../lib/reading-time.ts';
+
+export async function getStaticPaths() {
+  const entries = await getPublished('writing');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'writing'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const CATEGORY_LABELS: Record<CollectionEntry<'writing'>['data']['category'], string> = {
+  essay: 'Essay',
+  technical: 'Technical',
+  teaching: 'Teaching',
+  research: 'Research',
+  idea: 'Idea',
+  review: 'Review',
+};
+
+const { title, summary, category, publishedAt, updatedAt, substackUrl, formerTitles, draft } =
+  entry.data;
+---
+
+<ProseLayout
+  title={title}
+  summary={summary}
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+  readingTime={readingTime(entry.body ?? '')}
+  metaItems={[CATEGORY_LABELS[category], draft ? 'Draft' : undefined]}
+  formerTitles={formerTitles}
+  noindex={draft}
+>
+  <Content />
+
+  {
+    substackUrl && (
+      <Fragment slot="after-body">
+        {/* An outbound link to a copy elsewhere. The canonical URL for this
+            piece is always this page — see CLAUDE.md. */}
+        <p class="mt-12 border-t border-rule pt-6 font-sans text-sm text-ink-muted">
+          A version of this piece also appears on{' '}
+          <a href={substackUrl} rel="noopener">
+            Substack
+          </a>
+          .
+        </p>
+      </Fragment>
+    )
+  }
+</ProseLayout>

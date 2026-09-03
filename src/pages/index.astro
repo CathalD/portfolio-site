@@ -1,0 +1,102 @@
+---
+/*
+ * / — the home page.
+ *
+ * Sections arrive by stage. Stage 1 has the hero, the About section and the
+ * latest writing. Featured projects and current projects are added in Stage 2,
+ * once the projects collection exists.
+ *
+ * `wrapInMain={false}` because the hero runs full-bleed; this page supplies
+ * its own <main> so the landmark still starts at the top of the content.
+ */
+
+import { render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import Prose from '../components/Prose.astro';
+import WritingCard from '../components/WritingCard.astro';
+import heroImage from '../assets/hero-placeholder.jpg';
+import { getPublished, byDateDesc } from '../lib/content.ts';
+import { readingTime } from '../lib/reading-time.ts';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../lib/site.ts';
+
+/* The only real copy on this site that lives in code rather than in content/.
+   It is here because it is the site's masthead, not an editable page. */
+const STATEMENT =
+  'Understanding environmental systems, applying science to outcomes, building practical tools, and sharing what I learn.';
+const SUBTITLE = 'Conservation Biologist based in Canada.';
+
+/* Read through getPublished() so an unfinished About page is visible in
+   `astro dev` but omitted from the built site entirely. */
+const about = (await getPublished('pages')).find((entry) => entry.id === 'about');
+const aboutRendered = about && (about.body ?? '').trim() !== '' ? await render(about) : undefined;
+
+const latestWriting = byDateDesc(
+  await getPublished('writing'),
+  (entry) => entry.data.publishedAt,
+).slice(0, 3);
+
+const latestWithReadingTime = latestWriting.map((entry) => ({
+  entry,
+  readingTime: readingTime(entry.body ?? ''),
+}));
+---
+
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION} wrapInMain={false}>
+  {
+    /* TODO(cathal): replace src/assets/hero-placeholder.jpg with a real
+      landscape photograph, and rewrite imageAlt to describe it. This is an
+      Astro comment, so it is stripped from the built HTML. */
+  }
+  <Hero
+    image={heroImage}
+    imageAlt="A plain grey-green field, standing in for a landscape photograph."
+    heading={SITE_TITLE}
+    statement={STATEMENT}
+    subtitle={SUBTITLE}
+  />
+
+  <main id="main" class="mx-auto w-full max-w-[var(--measure-wide)] px-5 py-16 sm:px-8">
+    {
+      aboutRendered && (
+        <section aria-labelledby="about-heading" class="mb-20">
+          <h2 id="about-heading" class="text-2xl font-semibold tracking-tight text-ink">
+            About
+          </h2>
+          <Prose class="mt-6">
+            <aboutRendered.Content />
+          </Prose>
+          <p class="mt-6 font-sans text-sm">
+            <a href="/about/">Read more about Cathal</a>
+          </p>
+        </section>
+      )
+    }
+
+    {
+      /* TODO(cathal): featured projects and current projects go here in
+         Stage 2, once the projects collection exists. */
+    }
+
+    <section aria-labelledby="writing-heading">
+      <div class="flex flex-wrap items-baseline justify-between gap-4 border-b border-rule pb-4">
+        <h2 id="writing-heading" class="text-2xl font-semibold tracking-tight text-ink">
+          Latest writing
+        </h2>
+        <p class="font-sans text-sm"><a href="/writing/">All writing</a></p>
+      </div>
+
+      {
+        latestWithReadingTime.length === 0 ? (
+          <p class="mt-8 font-sans text-ink-muted">No writing has been published yet.</p>
+        ) : (
+          <div class="mt-8 flex flex-col gap-8">
+            {latestWithReadingTime.map(({ entry, readingTime }) => (
+              <WritingCard entry={entry} readingTime={readingTime} />
+            ))}
+          </div>
+        )
+      }
+    </section>
+  </main>
+</BaseLayout>

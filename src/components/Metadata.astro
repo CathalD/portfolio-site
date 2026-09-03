@@ -1,0 +1,66 @@
+---
+/*
+ * Metadata — the small sans-serif line of facts under a title.
+ *
+ * Used by: ProseLayout, WritingCard, and (from Stage 2) ProjectCard.
+ *
+ * Renders as a definition-free inline list separated by a middot. Dates are
+ * wrapped in <time> so they stay machine-readable.
+ */
+
+import { formatDate, isoDate } from '../lib/content.ts';
+
+interface Props {
+  publishedAt?: Date;
+  updatedAt?: Date;
+  /** Minutes. Computed at build time; never taken from frontmatter. */
+  readingTime?: number;
+  /** Free-text items, e.g. a category label or a project status. */
+  items?: (string | undefined)[];
+  class?: string;
+}
+
+const { publishedAt, updatedAt, readingTime, items = [], class: className } = Astro.props;
+
+const extras = items.filter((item): item is string => Boolean(item));
+---
+
+<p
+  class:list={[
+    'flex flex-wrap items-baseline gap-x-2 gap-y-1 font-sans text-sm text-ink-muted',
+    className,
+  ]}
+>
+  {publishedAt && <time datetime={isoDate(publishedAt)}>{formatDate(publishedAt)}</time>}
+
+  {
+    updatedAt && (
+      <>
+        <span aria-hidden="true">&middot;</span>
+        <span>
+          Updated <time datetime={isoDate(updatedAt)}>{formatDate(updatedAt)}</time>
+        </span>
+      </>
+    )
+  }
+
+  {
+    readingTime !== undefined && (
+      <>
+        <span aria-hidden="true">&middot;</span>
+        <span>{readingTime} min read</span>
+      </>
+    )
+  }
+
+  {
+    extras.map((item, index) => (
+      <>
+        {(index > 0 || publishedAt || updatedAt || readingTime !== undefined) && (
+          <span aria-hidden="true">&middot;</span>
+        )}
+        <span>{item}</span>
+      </>
+    ))
+  }
+</p>

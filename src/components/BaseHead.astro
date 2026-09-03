@@ -1,0 +1,86 @@
+---
+/*
+ * BaseHead — everything that belongs in <head>.
+ *
+ * Used by: BaseLayout only. No page should render this directly; compose
+ * BaseLayout instead, so the head can never drift between pages.
+ *
+ * This is also where global.css is imported, which is how the stylesheet
+ * reaches every page exactly once.
+ */
+
+import '../styles/global.css';
+import { Font } from 'astro:assets';
+import { SITE_TITLE, SITE_DESCRIPTION, SITE_LOCALE } from '../lib/site.ts';
+
+interface Props {
+  /** Page title. The site name is appended automatically. */
+  title: string;
+  /** Meta description. Falls back to the site description. */
+  description?: string;
+  /** Absolute or root-relative path to a social sharing image. */
+  image?: string;
+  /** 'article' for writing and project pages, 'website' for everything else. */
+  type?: 'website' | 'article';
+  /** Set on pages that should not appear in search results. */
+  noindex?: boolean;
+  /** ISO dates, for article pages. */
+  publishedAt?: Date;
+  updatedAt?: Date;
+}
+
+const {
+  title,
+  description = SITE_DESCRIPTION,
+  image,
+  type = 'website',
+  noindex = false,
+  publishedAt,
+  updatedAt,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const socialImage = image ? new URL(image, Astro.site).href : undefined;
+
+/* The home page shows the site name alone rather than "Cathal Doherty | Cathal Doherty". */
+const fullTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+{/* Self-hosted variable fonts. Preloaded because they are used above the fold. */}
+<Font cssVariable="--font-source-serif" preload />
+<Font cssVariable="--font-inter" preload />
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={`${SITE_TITLE} — Writing`}
+  href={new URL('rss.xml', Astro.site)}
+/>
+
+{/* Open Graph */}
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:site_name" content={SITE_TITLE} />
+<meta property="og:locale" content={SITE_LOCALE.replace('-', '_')} />
+{socialImage && <meta property="og:image" content={socialImage} />}
+{publishedAt && <meta property="article:published_time" content={publishedAt.toISOString()} />}
+{updatedAt && <meta property="article:modified_time" content={updatedAt.toISOString()} />}
+
+{/* Twitter/X */}
+<meta name="twitter:card" content={socialImage ? 'summary_large_image' : 'summary'} />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+{socialImage && <meta name="twitter:image" content={socialImage} />}

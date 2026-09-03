@@ -1,0 +1,65 @@
+---
+/*
+ * Nav — primary site navigation.
+ *
+ * Used by: BaseLayout.
+ *
+ * The full set of destinations is listed from day one (see NAV_ITEMS in
+ * src/lib/site.ts). Routes that have not been built yet render as plain text
+ * rather than links, so the shape of the site is visible without shipping a
+ * dead link. Remove a path from UNBUILT_ROUTES in the stage that builds it.
+ *
+ * There is no JavaScript here. The menu is a plain list that wraps on narrow
+ * screens — a hamburger would need a script and a focus trap to be accessible,
+ * and six short items do not need one.
+ */
+
+import { SITE_TITLE, NAV_ITEMS, UNBUILT_ROUTES } from '../lib/site.ts';
+
+const path = Astro.url.pathname;
+
+/** A nav item is current if it is the exact page or an ancestor section. */
+function isCurrent(href: string): boolean {
+  if (href === '/') return path === '/';
+  return path === href || path.startsWith(`${href}/`);
+}
+---
+
+<header class="no-print border-b border-rule">
+  <div
+    class="mx-auto flex max-w-[var(--measure-wide)] flex-wrap items-baseline gap-x-8 gap-y-3 px-5 py-5 sm:px-8"
+  >
+    <a
+      href="/"
+      class="font-serif text-lg font-semibold tracking-tight text-ink no-underline hover:text-accent"
+      >{SITE_TITLE}</a
+    >
+
+    <nav aria-label="Primary" class="ms-auto">
+      <ul class="flex flex-wrap items-baseline gap-x-6 gap-y-2 font-sans text-sm">
+        {
+          NAV_ITEMS.map(({ href, label }) =>
+            UNBUILT_ROUTES.includes(href) ? (
+              <li>
+                {/* Not built yet. Rendered as text so it cannot 404. */}
+                <span class="cursor-default text-ink-faint" title="Coming soon">
+                  {label}
+                </span>
+              </li>
+            ) : (
+              <li>
+                <a
+                  href={href}
+                  aria-current={isCurrent(href) ? 'page' : undefined}
+                  class="text-ink no-underline hover:text-accent aria-[current=page]:font-medium aria-[current=page]:text-accent aria-[current=page]:underline aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-[6px]"
+                >
+                  {label}
+                </a>
+              </li>
+            ),
+          )
+        }
+      </ul>
+    </nav>
+  </div>
+</header>

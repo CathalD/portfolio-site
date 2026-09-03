@@ -1,0 +1,42 @@
+---
+/*
+ * /[slug] — standalone prose pages, from content/pages/.
+ *
+ * A root-level catch-all, so content/pages/about.md publishes at /about.
+ * Astro prefers a more specific route over a dynamic one, so this cannot
+ * shadow /writing, /projects and so on.
+ *
+ * Because the paths come from getPublished(), a page that is still a draft
+ * generates no route at all rather than an empty one. That is what lets
+ * content/pages/about.md sit in the repository, visible in `astro dev`,
+ * without publishing a blank About page to the internet.
+ */
+
+import { render, type CollectionEntry } from 'astro:content';
+import ProseLayout from '../layouts/ProseLayout.astro';
+import { getPublished } from '../lib/content.ts';
+
+export async function getStaticPaths() {
+  const entries = await getPublished('pages');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'pages'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<ProseLayout
+  title={entry.data.title}
+  summary={entry.data.summary}
+  updatedAt={entry.data.updatedAt}
+  noindex={entry.data.draft}
+>
+  <Content />
+</ProseLayout>

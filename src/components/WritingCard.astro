@@ -1,0 +1,64 @@
+---
+/*
+ * WritingCard — one entry in the /writing index, on the home page, and in tag
+ * hubs.
+ *
+ * Used by: /writing/index.astro, /index.astro, and (from Stage 2)
+ * /tags/[tag].astro.
+ *
+ * The whole card is not a link. Only the title is. That is deliberate: a
+ * block-level link wrapping a heading, a date and a summary announces all of
+ * it as one long link name to a screen reader, and makes the summary text
+ * impossible to select with a mouse. The `::after` trick below extends the
+ * clickable area to the whole card without changing the accessible name.
+ */
+
+import Metadata from './Metadata.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'writing'>;
+  /** Reading time in minutes, computed at build time by the caller. */
+  readingTime?: number;
+  /** Render a larger variant, for a featured slot. */
+  featured?: boolean;
+}
+
+const { entry, readingTime, featured = false } = Astro.props;
+const { title, summary, category, publishedAt, draft } = entry.data;
+
+/** Human labels for the category enum. Kept next to the only place it renders. */
+const CATEGORY_LABELS: Record<CollectionEntry<'writing'>['data']['category'], string> = {
+  essay: 'Essay',
+  technical: 'Technical',
+  teaching: 'Teaching',
+  research: 'Research',
+  idea: 'Idea',
+  review: 'Review',
+};
+---
+
+<article class="group relative border-b border-rule pb-8">
+  <h3 class:list={['font-semibold tracking-tight text-ink', featured ? 'text-2xl' : 'text-xl']}>
+    <a
+      href={`/writing/${entry.id}/`}
+      class="text-ink no-underline after:absolute after:inset-0 after:content-[''] group-hover:text-accent group-hover:underline group-hover:decoration-1 group-hover:underline-offset-4"
+    >
+      {title}
+    </a>
+  </h3>
+
+  <Metadata
+    class="mt-2"
+    publishedAt={publishedAt}
+    readingTime={readingTime}
+    items={[
+      CATEGORY_LABELS[category],
+      /* Drafts are only ever visible in `astro dev`; flagging them here means
+         you can tell at a glance what is not yet public. */
+      draft ? 'Draft' : undefined,
+    ]}
+  />
+
+  <p class="mt-3 max-w-[var(--measure)] text-ink-muted">{summary}</p>
+</article>

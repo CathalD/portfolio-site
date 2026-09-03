@@ -1,0 +1,28 @@
+---
+/*
+ * Footer — site footer.
+ *
+ * Used by: BaseLayout.
+ *
+ * TODO(cathal): this footer has no contact details, affiliation or social
+ * links because those are content and I will not invent them. Tell me what
+ * you want here and I will add it.
+ */
+
+import { SITE_TITLE } from '../lib/site.ts';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="no-print mt-24 border-t border-rule">
+  <div
+    class="mx-auto flex max-w-[var(--measure-wide)] flex-wrap items-baseline justify-between gap-4 px-5 py-8 font-sans text-sm text-ink-muted sm:px-8"
+  >
+    <p>&copy; {year} {SITE_TITLE}</p>
+
+    <ul class="flex flex-wrap gap-x-6 gap-y-2">
+      <li><a href="/rss.xml" class="text-ink-muted hover:text-accent">RSS</a></li>
+      <li><a href="/sitemap-index.xml" class="text-ink-muted hover:text-accent">Sitemap</a></li>
+    </ul>
+  </div>
+</footer>

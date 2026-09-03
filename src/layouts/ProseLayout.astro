@@ -1,0 +1,86 @@
+---
+/*
+ * ProseLayout — the long-form reading page.
+ *
+ * Used by: /writing/[...slug], and (from Stage 2) /projects/[...slug] and the
+ * static prose pages.
+ *
+ * Everything here is in service of one thing: a single column of text at a
+ * comfortable measure, with the title, metadata and body sharing an edge.
+ */
+
+import BaseLayout from './BaseLayout.astro';
+import Prose from '../components/Prose.astro';
+import Metadata from '../components/Metadata.astro';
+
+interface Props {
+  title: string;
+  /** Shown under the title as a standfirst, and used as the meta description. */
+  summary: string;
+  publishedAt?: Date;
+  updatedAt?: Date;
+  readingTime?: number;
+  /** Extra metadata items, e.g. a category label. */
+  metaItems?: (string | undefined)[];
+  image?: string;
+  noindex?: boolean;
+  /** Rendered between the header and the body — hero image, tags, notices. */
+  formerTitles?: string[];
+}
+
+const {
+  title,
+  summary,
+  publishedAt,
+  updatedAt,
+  readingTime,
+  metaItems,
+  image,
+  noindex,
+  formerTitles,
+} = Astro.props;
+---
+
+<BaseLayout
+  title={title}
+  description={summary}
+  image={image}
+  type="article"
+  noindex={noindex}
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+>
+  <article class="mx-auto max-w-[var(--measure)]">
+    <header class="mb-10 border-b border-rule pb-8">
+      <h1 class="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{title}</h1>
+
+      <p class="mt-4 text-lg text-ink-muted">{summary}</p>
+
+      <Metadata
+        class="mt-5"
+        publishedAt={publishedAt}
+        updatedAt={updatedAt}
+        readingTime={readingTime}
+        items={metaItems}
+      />
+
+      {
+        formerTitles && formerTitles.length > 0 && (
+          <p class="mt-4 font-sans text-sm text-ink-faint">
+            {/* Slugs never change, so a retitled piece stays findable under its
+                old name. See CLAUDE.md, "The permanent URL contract". */}
+            Previously published as {formerTitles.map((t) => `“${t}”`).join(', ')}.
+          </p>
+        )
+      }
+    </header>
+
+    <slot name="before-body" />
+
+    <Prose>
+      <slot />
+    </Prose>
+
+    <slot name="after-body" />
+  </article>
+</BaseLayout>

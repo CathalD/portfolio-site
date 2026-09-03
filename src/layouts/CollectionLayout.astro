@@ -1,0 +1,39 @@
+---
+/*
+ * CollectionLayout — the shell shared by every index page.
+ *
+ * Used by: /writing, and (from Stage 2 onwards) /projects, /gallery,
+ * /archive and /tags/[tag].
+ *
+ * It supplies the page header and the empty state; the caller supplies the
+ * list itself, because a grid of gallery thumbnails and a stack of essay cards
+ * want different markup. What must NOT differ between index pages — heading
+ * level, spacing, how "nothing here yet" reads — lives here.
+ */
+
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  /** One or two sentences under the heading. Used as the meta description. */
+  description: string;
+  /** Number of items being listed. Drives the empty state. */
+  count?: number;
+  /** What to say when the collection is empty. */
+  emptyMessage?: string;
+  /** Filters, sort controls, or a count line. */
+  noindex?: boolean;
+}
+
+const { title, description, count, emptyMessage = 'Nothing here yet.', noindex } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} noindex={noindex}>
+  <header class="mb-12 border-b border-rule pb-8">
+    <h1 class="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{title}</h1>
+    <p class="mt-4 max-w-[var(--measure)] text-lg text-ink-muted">{description}</p>
+    <slot name="header-extra" />
+  </header>
+
+  {count === 0 ? <p class="font-sans text-ink-muted">{emptyMessage}</p> : <slot />}
+</BaseLayout>

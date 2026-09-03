@@ -1,0 +1,20 @@
+# tags.yaml — the canonical tag list for this site.
+#
+# A tag may only be used in content if it appears here. `npm run validate:tags`
+# fails the build otherwise. That rule is the entire point of this file: it is
+# what stops `eelgrass`, `Eelgrass` and `seagrass` from becoming three separate
+# tags that each hold a third of the relevant work.
+#
+# Fields:
+#   slug         lower-case kebab-case; this is what goes in frontmatter and
+#                what appears in the URL /tags/[slug]. It never changes.
+#   label        how the tag is displayed. This CAN change.
+#   description  optional; shown on the tag hub page.
+#   group        optional; a key from topics.yaml, for grouping in the UI.
+#
+# TODO(cathal): this list is intentionally empty. The taxonomy is yours to
+# decide and it is the one thing on this site that is expensive to get wrong —
+# renaming a tag later means editing every file that uses it. Stage 2 will ask
+# you for the real list. Until then, no content carries tags.
+
+tags: []
