@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cathaldoherty.ca/sitemap-index.xml

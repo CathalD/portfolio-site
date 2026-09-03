@@ -1,0 +1,12 @@
+<!--
+  Favicon. A field-notebook rule and leaf, in the site's accent green.
+
+  This is one of the few places outside src/styles/theme.css that names a
+  colour: an SVG served as a static file cannot read a CSS custom property from
+  the page. If the accent green in theme.css changes, change it here too.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Cathal Doherty">
+  <rect width="32" height="32" fill="#fbfaf7"/>
+  <path d="M6 26 C 6 14, 14 6, 26 6 C 26 18, 18 26, 6 26 Z" fill="#2c5844"/>
+  <path d="M6 26 L 26 6" stroke="#fbfaf7" stroke-width="1.5" fill="none"/>
+</svg>
