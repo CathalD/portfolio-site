@@ -1,0 +1,47 @@
+{
+  "name": "cathaldoherty-ca",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Personal website and long-term work archive for Cathal Doherty.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "typecheck": "astro check",
+    "validate:content": "node scripts/validate-content.ts",
+    "validate:tags": "node scripts/validate-tags.ts",
+    "validate:refs": "node scripts/validate-refs.ts",
+    "check:links": "node scripts/check-links.ts",
+    "check:a11y": "node scripts/check-a11y.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "check": "npm run validate:tags && npm run validate:refs && npm run typecheck && npm run lint && npm run format:check && npm run build && npm run validate:content && npm run check:links && npm run check:a11y"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.1",
+    "sharp": "^0.35.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "eslint": "^10.9.1",
+    "eslint-plugin-astro": "^3.1.0",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.6",
+    "prettier-plugin-astro": "^0.14.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.69.0",
+    "yaml": "^2.9.0"
+  }
+}

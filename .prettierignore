@@ -1,0 +1,7 @@
+dist/
+.astro/
+node_modules/
+public/
+src/assets/fonts/
+content/references/*.bib
+package-lock.json

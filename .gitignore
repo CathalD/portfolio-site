@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.astro/
+.vercel/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# ------------------------------------------------------------------
+# Content staging areas.
+#
+# `_inbox` folders are where unprocessed material is dropped before it is
+# turned into content: camera cards, exported documents, downloads. They are
+# working areas, not the archive, and they must never be committed.
+# ------------------------------------------------------------------
+content/**/_inbox/
+scripts/geo-allowlist.txt
+
+# ------------------------------------------------------------------
+# Full-resolution image originals.
+#
+# Only web derivatives belong in this repository. Originals live outside it
+# (see docs/adding-gallery-items.md) — a decade of raw files would make the
+# repository unusable.
+# ------------------------------------------------------------------
+originals/
+*.ARW
+*.CR2
+*.CR3
+*.NEF
+*.DNG
+*.RAF
+*.ORF
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
