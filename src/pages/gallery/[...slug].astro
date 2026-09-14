@@ -1,0 +1,112 @@
+---
+/* /gallery/[slug] — one media item with its owner-supplied context. */
+import { type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Tag from '../../components/Tag.astro';
+import { getPublished, formatDate, isoDate } from '../../lib/content.ts';
+import { getTags } from '../../lib/taxonomy.ts';
+import GalleryImage from '../../components/GalleryImage.astro';
+
+export async function getStaticPaths() {
+  return (await getPublished('gallery')).map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'gallery'>;
+}
+
+const { entry } = Astro.props;
+const data = entry.data;
+const definitions = getTags();
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.caption ?? data.alt}
+  noindex={data.draft}
+  indexForSearch={true}
+>
+  <article class="mx-auto max-w-[var(--measure-wide)]">
+    <header class="mb-8">
+      <h1 class="text-3xl font-semibold sm:text-4xl">{data.title}</h1>
+      {data.draft && <p class="mt-3 font-sans text-sm text-ink-muted">Draft</p>}
+    </header>
+
+    <figure>
+      <GalleryImage
+        src={data.src}
+        alt={data.alt}
+        sizes="(min-width: 75rem) 75rem, 100vw"
+        class="max-h-[75vh] w-full border border-rule object-contain"
+      />
+      {data.caption && <figcaption class="mt-4 max-w-[var(--measure)]">{data.caption}</figcaption>}
+    </figure>
+
+    <dl
+      class="mt-10 grid gap-x-8 gap-y-3 border-t border-rule pt-6 font-sans text-sm sm:grid-cols-2"
+    >
+      {
+        data.capturedAt && (
+          <>
+            <dt class="text-ink-muted">Captured</dt>
+            <dd>
+              <time datetime={isoDate(data.capturedAt)}>{formatDate(data.capturedAt)}</time>
+            </dd>
+          </>
+        )
+      }
+      {
+        data.camera && (
+          <>
+            <>
+              <dt class="text-ink-muted">Camera</dt>
+              <dd>{data.camera}</dd>
+            </>
+          </>
+        )
+      }
+      {
+        data.lens && (
+          <>
+            <>
+              <dt class="text-ink-muted">Lens</dt>
+              <dd>{data.lens}</dd>
+            </>
+          </>
+        )
+      }
+      {
+        data.location && (
+          <>
+            <>
+              <dt class="text-ink-muted">Location</dt>
+              <dd>{data.location}</dd>
+            </>
+          </>
+        )
+      }
+      {
+        data.project && (
+          <>
+            <dt class="text-ink-muted">Project</dt>
+            <dd>
+              <a href={`/projects/${data.project}/`}>{data.project}</a>
+            </dd>
+          </>
+        )
+      }
+    </dl>
+    {
+      data.tags.length > 0 && (
+        <div class="mt-8 flex flex-wrap gap-x-4 gap-y-2">
+          {data.tags.map((slug) => (
+            <Tag slug={slug} definitions={definitions} />
+          ))}
+        </div>
+      )
+    }
+  </article>
+</BaseLayout>

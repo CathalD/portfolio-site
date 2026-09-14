@@ -15,6 +15,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import Prose from '../components/Prose.astro';
 import WritingCard from '../components/WritingCard.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 import heroImage from '../assets/hero-placeholder.jpg';
 import { getPublished, byDateDesc } from '../lib/content.ts';
 import { readingTime } from '../lib/reading-time.ts';
@@ -40,6 +41,16 @@ const latestWithReadingTime = latestWriting.map((entry) => ({
   entry,
   readingTime: readingTime(entry.body ?? ''),
 }));
+
+const allProjects = (await getPublished('projects')).sort((a, b) => b.data.year - a.data.year);
+const featuredProjects = allProjects.filter((entry) => entry.data.featured).slice(0, 3);
+const currentProjects = allProjects
+  .filter(
+    (entry) =>
+      ['taking-off', 'in-progress'].includes(entry.data.status) &&
+      !featuredProjects.some((featured) => featured.id === entry.id),
+  )
+  .slice(0, 3);
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION} wrapInMain={false}>
@@ -56,7 +67,11 @@ const latestWithReadingTime = latestWriting.map((entry) => ({
     subtitle={SUBTITLE}
   />
 
-  <main id="main" class="mx-auto w-full max-w-[var(--measure-wide)] px-5 py-16 sm:px-8">
+  <main
+    id="main"
+    data-pagefind-body
+    class="mx-auto w-full max-w-[var(--measure-wide)] px-5 py-16 sm:px-8"
+  >
     {
       aboutRendered && (
         <section aria-labelledby="about-heading" class="mb-20">
@@ -74,8 +89,37 @@ const latestWithReadingTime = latestWriting.map((entry) => ({
     }
 
     {
-      /* TODO(cathal): featured projects and current projects go here in
-         Stage 2, once the projects collection exists. */
+      featuredProjects.length > 0 && (
+        <section aria-labelledby="featured-heading" class="mb-20">
+          <div class="flex flex-wrap items-baseline justify-between gap-4 border-b border-rule pb-4">
+            <h2 id="featured-heading" class="text-2xl font-semibold">
+              Featured projects
+            </h2>
+            <a href="/projects/" class="font-sans text-sm">
+              All projects
+            </a>
+          </div>
+          <div class="mt-8 grid gap-8 md:grid-cols-3">
+            {featuredProjects.map((entry) => (
+              <ProjectCard entry={entry} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+    {
+      currentProjects.length > 0 && (
+        <section aria-labelledby="current-heading" class="mb-20">
+          <h2 id="current-heading" class="mb-8 border-b border-rule pb-4 text-2xl font-semibold">
+            Current projects
+          </h2>
+          <div class="grid gap-8 md:grid-cols-3">
+            {currentProjects.map((entry) => (
+              <ProjectCard entry={entry} />
+            ))}
+          </div>
+        </section>
+      )
     }
 
     <section aria-labelledby="writing-heading">

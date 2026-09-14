@@ -31,15 +31,18 @@ interface Props {
   wrapInMain?: boolean;
   /** Extra classes on the <main> wrapper. */
   mainClass?: string;
+  /** Include this page's main content in the post-build search index. */
+  indexForSearch?: boolean;
 }
 
-const { wrapInMain = true, mainClass, ...head } = Astro.props;
+const { wrapInMain = true, mainClass, indexForSearch = false, ...head } = Astro.props;
 ---
 
 <!doctype html>
 <html lang={SITE_LOCALE}>
   <head>
     <BaseHead {...head} />
+    <slot name="head" />
   </head>
 
   <body class="flex min-h-screen flex-col">
@@ -57,6 +60,7 @@ const { wrapInMain = true, mainClass, ...head } = Astro.props;
       wrapInMain ? (
         <main
           id="main"
+          data-pagefind-body={indexForSearch ? true : undefined}
           class:list={[
             'mx-auto w-full max-w-[var(--measure-wide)] flex-1 px-5 py-12 sm:px-8 sm:py-16',
             mainClass,

@@ -1,60 +1,30 @@
-# Adding photographs and video
+# Adding photographs
 
-> **Not built yet.** The gallery and its ingest script arrive in **Stage 3**.
-> This page records the plan — particularly the location-privacy rule, which is
-> the part that matters most — but it is not yet something you can follow.
+Keep full-resolution originals outside this repository for permanent storage.
+The temporary `content/gallery/_inbox/` folder is ignored by Git and is only
+a working area for photographs you are ready to prepare. Create it if it does
+not exist. Never rely on it as your only copy.
 
-## How it will work
+To prepare photographs, put JPEG, PNG, WebP, TIFF or AVIF files in that inbox
+and run `npm run ingest`. Each filename becomes a permanent gallery slug, so
+rename files before ingest if their filenames expose private information or
+would make poor URLs. The script refuses to overwrite an existing slug. It
+creates responsive AVIF and WebP files in
+`public/images/gallery/[slug]/` and a draft sidecar at
+`content/gallery/[slug].md`. It does not modify or delete the input.
 
-Full-resolution originals stay **outside** this repository. Only web-sized
-versions are committed; a decade of raw files would make the repository
-unusable.
+Open each draft sidecar. Replace the `TODO(cathal)` title and alt text with
+your own accurate words; optionally add a caption, date, coarse location,
+project slug and tags. Check the generated images visually, then set
+`draft: false` and run `npm run check`. The gallery index and detail page
+appear automatically. Video is not supported by the gallery yet; adding it
+will also require a decision about hosting, captions and transcripts.
 
-The process will be:
+The image conversion strips all EXIF metadata, including GPS, by default.
+There is no coordinate opt-in in this version. Do not put sensitive locations
+in the filename, slug, `location`, or caption either. `location` should be
+coarse when used.
 
-1. Drop photographs into `content/gallery/_inbox/`. That folder is ignored by
-   git, so nothing in it is ever committed by accident.
-2. Run `npm run ingest`.
-3. The script reads the EXIF data, generates AVIF and WebP versions at four
-   sizes, writes them to `public/images/gallery/[slug]/`, and creates a
-   Markdown file with the camera settings already filled in.
-4. It leaves `TODO(cathal):` markers on the things only you can supply: the alt
-   text, the caption, the species, and which project it belongs to.
-5. You fill those in — or ask Claude to walk you through them with the
-   `add-gallery-items` skill.
-
-The originals are never modified and never deleted.
-
-## Location data — the important part
-
-**GPS coordinates are stripped from every photograph by default.**
-
-Cameras and phones record the exact location of every shot. Publishing the
-coordinates of a nest, a den, or a rare plant population can get that
-population disturbed, collected or poached. This is not a hypothetical risk in
-conservation work.
-
-Coordinates are only ever published if a file is listed explicitly in
-`scripts/geo-allowlist.txt` — a file that is itself not stored in the
-repository, so the decision is deliberate, per-photograph, and made on your own
-machine.
-
-The default is silence. If you are unsure about a location, leave it out. A
-coarse, human-readable `location` field ("Georgian Bay", "eastern Ontario") is
-available and is almost always the right level of detail for a public site.
-
-## Alt text is required
-
-The gallery schema makes `alt` a **required** field. A photograph without a
-description is inaccessible to anyone using a screen reader, and it is
-invisible to search.
-
-Describe what the picture actually shows. Do not repeat the title, and do not
-write "photograph of" — that is already known.
-
-## What you will need to decide in Stage 3
-
-- Where the full-resolution originals live, so the documentation can point at
-  it.
-- Whether video is hosted elsewhere and embedded, or committed here. Video
-  files are large and this repository should stay small.
+If ingest reports that a slug already exists, stop and inspect both the
+sidecar and derivative directory. It never overwrites either. If a draft does
+not appear on the public site, check `draft`; drafts are preview-only.

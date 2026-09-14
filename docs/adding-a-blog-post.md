@@ -17,7 +17,7 @@ or tell when it has got something wrong.
 ## Doing it by hand
 
 Create a file at `content/writing/some-title.md`. The name of that file is
-permanent — it becomes `cathaldoherty.ca/writing/some-title` — so choose it
+permanent — it becomes `/writing/some-title` on whichever domain hosts the site — so choose it
 deliberately. Short, lower case, words separated by hyphens.
 
 The file starts with a block between two `---` lines. This is the frontmatter:

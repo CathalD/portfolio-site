@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://cathaldoherty.ca/sitemap-index.xml
+Sitemap: https://portfolio-site-phi-six-42.vercel.app/sitemap-index.xml

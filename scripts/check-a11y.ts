@@ -13,9 +13,9 @@
  * Run: npm run check:a11y
  */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -235,19 +235,25 @@ console.log(results.join('\n'));
 
 // Guard against a hex value escaping theme.css into the rest of the codebase.
 const strayHex: string[] = [];
-const { execSync } = await import('node:child_process');
-try {
-  const out = execSync(
-    `git grep -nIE "#[0-9a-fA-F]{6}\\b" -- src scripts ':!src/styles/theme.css' || true`,
-    { cwd: root, encoding: 'utf8' },
-  );
-  for (const line of out.split('\n')) {
-    // Ignore hex-looking strings in comments about this very rule.
-    if (line.trim() && !line.includes('theme.css')) strayHex.push(line);
+function inspect(dir: string): void {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      inspect(path);
+      continue;
+    }
+    if (path === join(root, 'src/styles/theme.css')) continue;
+    if (!/\.(?:astro|css|mjs|ts|tsx|js)$/.test(entry.name)) continue;
+    for (const [index, line] of readFileSync(path, 'utf8').split('\n').entries()) {
+      // Ignore comments that quote the name of the canonical colour file.
+      if (/#[0-9a-fA-F]{6}\b/.test(line) && !line.includes('theme.css')) {
+        strayHex.push(`${relative(root, path)}:${index + 1}:${line.trim()}`);
+      }
+    }
   }
-} catch {
-  // git not available (e.g. a tarball build) — skip this check rather than fail.
 }
+inspect(join(root, 'src'));
+inspect(join(root, 'scripts'));
 
 if (strayHex.length > 0) {
   console.log('\nHex values found outside src/styles/theme.css:\n');

@@ -60,7 +60,8 @@ function variants(family, weightRange) {
 }
 
 export default defineConfig({
-  site: 'https://cathaldoherty.ca',
+  // TODO(cathal): replace this origin (and public/robots.txt) after you buy a domain.
+  site: 'https://portfolio-site-phi-six-42.vercel.app',
 
   integrations: [
     sitemap({

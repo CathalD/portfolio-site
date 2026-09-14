@@ -1,0 +1,26 @@
+---
+/* /archive/[year] — a year-specific view over the same published entries. */
+import CollectionLayout from '../../layouts/CollectionLayout.astro';
+import Timeline from '../../components/Timeline.astro';
+import { getArchiveEntries, archiveYears, type ArchiveEntry } from '../../lib/archive.ts';
+
+export async function getStaticPaths() {
+  const entries = await getArchiveEntries();
+  return archiveYears(entries)
+    .filter((year) => year !== 0)
+    .map((year) => ({ params: { year: String(year) }, props: { year, entries } }));
+}
+
+interface Props {
+  year: number;
+  entries: ArchiveEntry[];
+}
+
+const { year, entries } = Astro.props;
+const thisYear = entries.filter((entry) => entry.year === year);
+---
+
+<CollectionLayout title={String(year)} description={`Work from ${year}.`} count={thisYear.length}>
+  <p slot="header-extra" class="mt-4 font-sans text-sm"><a href="/archive/">All years</a></p>
+  <Timeline entries={thisYear} linkYears={false} />
+</CollectionLayout>

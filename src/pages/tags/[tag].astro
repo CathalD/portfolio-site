@@ -1,0 +1,81 @@
+---
+/* /tags/[tag] — one hub for every owner-defined tag. */
+import CollectionLayout from '../../layouts/CollectionLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import WritingCard from '../../components/WritingCard.astro';
+import GalleryCard from '../../components/GalleryCard.astro';
+import { getPublished } from '../../lib/content.ts';
+import { readingTime } from '../../lib/reading-time.ts';
+import { getTags, type TagDefinition } from '../../lib/taxonomy.ts';
+
+export function getStaticPaths() {
+  return getTags().map((tag) => ({ params: { tag: tag.slug }, props: { tag } }));
+}
+
+interface Props {
+  tag: TagDefinition;
+}
+
+const { tag } = Astro.props;
+const [projects, writing, gallery] = await Promise.all([
+  getPublished('projects'),
+  getPublished('writing'),
+  getPublished('gallery'),
+]);
+const matches = {
+  projects: projects.filter((entry) => entry.data.tags.includes(tag.slug)),
+  writing: writing.filter((entry) => entry.data.tags.includes(tag.slug)),
+  gallery: gallery.filter((entry) => entry.data.tags.includes(tag.slug)),
+};
+const count = matches.projects.length + matches.writing.length + matches.gallery.length;
+---
+
+<CollectionLayout
+  title={tag.label}
+  description={tag.description ?? `Work tagged ${tag.label}.`}
+  count={count}
+  emptyMessage="Nothing has been published under this tag yet."
+>
+  {
+    matches.projects.length > 0 && (
+      <section aria-labelledby="tag-projects" class="mb-12">
+        <h2 id="tag-projects" class="mb-6 text-2xl">
+          Projects
+        </h2>
+        <div class="grid gap-8 md:grid-cols-2">
+          {matches.projects.map((entry) => (
+            <ProjectCard entry={entry} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+  {
+    matches.writing.length > 0 && (
+      <section aria-labelledby="tag-writing" class="mb-12">
+        <h2 id="tag-writing" class="mb-6 text-2xl">
+          Writing
+        </h2>
+        <div class="flex flex-col gap-8">
+          {matches.writing.map((entry) => (
+            <WritingCard entry={entry} readingTime={readingTime(entry.body ?? '')} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+  {
+    matches.gallery.length > 0 && (
+      <section aria-labelledby="tag-gallery">
+        <h2 id="tag-gallery" class="mb-6 text-2xl">
+          Gallery
+        </h2>
+        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {matches.gallery.map((entry) => (
+            <GalleryCard entry={entry} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</CollectionLayout>

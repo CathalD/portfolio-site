@@ -1,0 +1,19 @@
+---
+/* /projects — newest projects, while archived projects retain their URLs. */
+import CollectionLayout from '../../layouts/CollectionLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getPublished } from '../../lib/content.ts';
+
+const projects = (await getPublished('projects')).sort((a, b) => b.data.year - a.data.year);
+---
+
+<CollectionLayout
+  title="Projects"
+  description="Projects and practical work."
+  count={projects.length}
+  emptyMessage="No projects have been published yet."
+>
+  <div class="grid gap-8 md:grid-cols-2">
+    {projects.map((entry) => <ProjectCard entry={entry} />)}
+  </div>
+</CollectionLayout>
