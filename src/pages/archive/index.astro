@@ -1,0 +1,17 @@
+---
+/* /archive — chronological view of published content; no files are moved. */
+import CollectionLayout from '../../layouts/CollectionLayout.astro';
+import Timeline from '../../components/Timeline.astro';
+import { getArchiveEntries } from '../../lib/archive.ts';
+
+const entries = await getArchiveEntries();
+---
+
+<CollectionLayout
+  title="Archive"
+  description="Work through the years. Entries retain their original addresses."
+  count={entries.length}
+  emptyMessage="Nothing has been published yet."
+>
+  <Timeline entries={entries} />
+</CollectionLayout>

@@ -1,0 +1,27 @@
+---
+/* GalleryCard — one photograph on gallery and tag index pages. */
+import type { CollectionEntry } from 'astro:content';
+import GalleryImage from './GalleryImage.astro';
+
+interface Props {
+  entry: CollectionEntry<'gallery'>;
+}
+
+const { entry } = Astro.props;
+---
+
+<article class="border-b border-rule pb-6">
+  <a href={`/gallery/${entry.id}/`} class="block no-underline">
+    <GalleryImage
+      src={entry.data.src}
+      alt={entry.data.alt}
+      sizes="(min-width: 64rem) 33vw, (min-width: 40rem) 50vw, 100vw"
+      class="aspect-[4/3] w-full border border-rule object-cover"
+    />
+    <h3 class="mt-4 text-xl font-semibold text-ink underline underline-offset-4">
+      {entry.data.title}
+    </h3>
+  </a>
+  {entry.data.caption && <p class="mt-2 text-ink-muted">{entry.data.caption}</p>}
+  {entry.data.draft && <p class="mt-2 font-sans text-sm text-ink-muted">Draft</p>}
+</article>

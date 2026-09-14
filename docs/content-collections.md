@@ -8,8 +8,8 @@ repository — deliberately not buried inside the code. Each subfolder is a
 content/
   writing/      Essays, technical notes, teaching material, reviews
   pages/        Standalone pages, e.g. About
-  projects/     One folder per project            (from Stage 2)
-  gallery/      One file per photograph or video  (from Stage 3)
+  projects/     One folder per project
+  gallery/      One file per photograph
   data/         Shared lists: tags, topics, timeline
   references/   library.bib, exported from Zotero (from Stage 4)
   cv/           cv.yaml                           (from Stage 4)

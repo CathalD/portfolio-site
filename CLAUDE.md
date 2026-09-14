@@ -11,8 +11,11 @@ are easy to undo by accident because the reason is not visible in the code.
 ## What this is
 
 The personal website and long-term work archive of **Cathal Doherty**, a
-conservation biologist based in Toronto. It lives at
-[cathaldoherty.ca](https://cathaldoherty.ca).
+conservation biologist based in Toronto. It currently lives at
+[portfolio-site-phi-six-42.vercel.app](https://portfolio-site-phi-six-42.vercel.app/).
+The final domain has not been purchased. When it is, update the canonical
+origin in `astro.config.mjs` and the sitemap origin in `public/robots.txt`
+together.
 
 It is not a portfolio template. It is expected to be maintained for a decade,
 and to be edited primarily through AI assistance rather than by a web
@@ -298,6 +301,7 @@ Supporting data:
 | `prettier`, `prettier-plugin-astro`                                           | Formatting.                                                                                  |
 | `eslint`, `typescript-eslint`, `eslint-plugin-astro`, `@eslint/js`, `globals` | Linting.                                                                                     |
 | `yaml`                                                                        | Parsing `tags.yaml` and frontmatter in the validator scripts, which run outside Astro.       |
+| `pagefind`                                                                    | Builds a static search index after Astro, so search needs no server or content service.      |
 
 Fonts are **not** a dependency. Source Serif 4 and Inter are committed as
 `.woff2` files in `src/assets/fonts/` with their SIL Open Font Licenses, and
@@ -315,10 +319,9 @@ can rot, and this site should still build in 2035.
 - **`content/pages/about.md` is empty and `draft: true`.** Cathal has not
   written it yet, and nobody should write it for him. Because it is a draft, it
   generates no page at all rather than an empty one.
-- **Four nav items render as grey text, not links.** `/cv`, `/projects`,
-  `/gallery` and `/archive` are in `UNBUILT_ROUTES` in `src/lib/site.ts`. The
-  navigation shows the shape of the finished site without shipping a 404.
-  Remove a path from that list in the stage that builds the route.
+- **CV renders as grey text, not a link.** `/cv` remains in `UNBUILT_ROUTES`
+  until Cathal supplies the source CV and Zotero export. Projects, gallery,
+  archive, and search have empty-state routes that are safe to link now.
 - **`.skip-link` is hand-written CSS, not `sr-only focus:not-sr-only`
   utilities.** The utility version depends on the order Tailwind emits two
   rules in, and it silently stopped working during Stage 1. A skip link that
@@ -352,9 +355,9 @@ can rot, and this site should still build in 2035.
 
 ## Build stages
 
-| Stage | Scope                                                                                   | State       |
-| ----- | --------------------------------------------------------------------------------------- | ----------- |
-| 1     | Foundation: Astro, theme, fonts, layouts, `writing`, RSS, sitemap, validators, CI, docs | Complete    |
-| 2     | Projects and taxonomy: `projects`, `data/*.yaml`, tag hub, homepage project slots       | Not started |
-| 3     | Media: `gallery`, ingest script, `media.ts`, lightbox                                   | Not started |
-| 4     | Archive, CV, BibTeX, Pagefind search, full a11y audit                                   | Not started |
+| Stage | Scope                                                                                   | State      |
+| ----- | --------------------------------------------------------------------------------------- | ---------- |
+| 1     | Foundation: Astro, theme, fonts, layouts, `writing`, RSS, sitemap, validators, CI, docs | Complete   |
+| 2     | Projects and taxonomy: `projects`, tags, tag hub, homepage project slots                | Core built |
+| 3     | Media: `gallery`, safe ingest script, `media.ts`; lightbox/video ingest later           | Core built |
+| 4     | Archive and Pagefind search built; CV, BibTeX rendering and full a11y audit remain      | Partial    |

@@ -1,0 +1,52 @@
+---
+/* /search — Pagefind indexes the home page and published content detail pages. */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Search" description="Search published projects, writing and gallery items.">
+  {
+    !import.meta.env.DEV && (
+      <Fragment slot="head">
+        <link rel="stylesheet" href="/pagefind/pagefind-component-ui.css" />
+        <script is:inline type="module" src="/pagefind/pagefind-component-ui.js" />
+      </Fragment>
+    )
+  }
+  <div class="mx-auto max-w-[var(--measure)]">
+    <h1 class="text-3xl font-semibold sm:text-4xl">Search</h1>
+    <p class="mt-4 text-ink-muted">Find published projects, writing and gallery items.</p>
+    {
+      import.meta.env.DEV ? (
+        <p class="mt-8 font-sans text-ink-muted">Search is available in the built site.</p>
+      ) : (
+        <div class="search-ui mt-8 font-sans">
+          <pagefind-config bundle-path="/pagefind/" />
+          <pagefind-input placeholder="Search the site" />
+          <pagefind-summary />
+          <pagefind-results />
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .search-ui {
+    --pf-text: var(--color-ink);
+    --pf-text-secondary: var(--color-ink-muted);
+    --pf-text-muted: var(--color-ink-faint);
+    --pf-background: var(--color-paper);
+    --pf-border: var(--color-rule);
+    --pf-border-focus: var(--color-focus);
+    --pf-hover: var(--color-accent-wash);
+    --pf-mark: var(--color-ink);
+    --pf-outline-focus: var(--color-focus);
+    --pf-font: var(--font-sans);
+    --pf-input-height: 3rem;
+    --pf-input-font-size: 1rem;
+    --pf-summary-font-size: 0.875rem;
+    --pf-result-title-font-size: 1rem;
+    --pf-result-excerpt-font-size: 1rem;
+    --pf-border-radius: var(--radius);
+  }
+</style>

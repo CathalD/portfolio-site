@@ -1,0 +1,79 @@
+---
+/* /projects/[slug] — one file per project; the folder name is its permanent URL. */
+import { render, type CollectionEntry } from 'astro:content';
+import ProseLayout from '../../layouts/ProseLayout.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import Tag from '../../components/Tag.astro';
+import { getPublished } from '../../lib/content.ts';
+import { getTags } from '../../lib/taxonomy.ts';
+import { mediaUrl } from '../../lib/media.ts';
+
+export async function getStaticPaths() {
+  return (await getPublished('projects')).map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'projects'>;
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const definitions = getTags();
+const [allProjects, allWriting] = await Promise.all([
+  getPublished('projects'),
+  getPublished('writing'),
+]);
+const relatedProjects = allProjects.filter((candidate) =>
+  entry.data.relatedProjects?.includes(candidate.id),
+);
+const relatedWriting = allWriting.filter((candidate) =>
+  entry.data.relatedWriting?.includes(candidate.id),
+);
+---
+
+<ProseLayout
+  title={entry.data.title}
+  summary={entry.data.summary}
+  publishedAt={entry.data.publishedAt}
+  updatedAt={entry.data.updatedAt}
+  metaItems={[String(entry.data.year), entry.data.draft ? 'Draft' : undefined]}
+  formerTitles={entry.data.formerTitles}
+  noindex={entry.data.draft}
+>
+  <div slot="before-body" class="mb-8 flex flex-wrap items-center gap-x-4 gap-y-2">
+    <StatusBadge status={entry.data.status} />
+    {entry.data.tags.map((slug) => <Tag slug={slug} definitions={definitions} />)}
+  </div>
+  <TableOfContents slot="before-body" headings={headings} />
+  {
+    entry.data.heroImage && (
+      <figure slot="before-body" class="mb-10">
+        <img src={mediaUrl(entry.data.heroImage)} alt={entry.data.heroAlt ?? ''} />
+      </figure>
+    )
+  }
+  <Content />
+  {
+    (relatedProjects.length > 0 || relatedWriting.length > 0) && (
+      <div slot="after-body" class="mt-12 border-t border-rule pt-6">
+        <h2 class="text-xl">Related work</h2>
+        <ul class="mt-4 space-y-2 font-sans text-sm">
+          {relatedProjects.map((candidate) => (
+            <li>
+              <a href={`/projects/${candidate.id}/`}>{candidate.data.title}</a>
+            </li>
+          ))}
+          {relatedWriting.map((candidate) => (
+            <li>
+              <a href={`/writing/${candidate.id}/`}>{candidate.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+</ProseLayout>

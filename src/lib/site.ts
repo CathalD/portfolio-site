@@ -32,4 +32,4 @@ export const NAV_ITEMS = [
  * the navigation is complete from day one without shipping a 404. Delete an
  * entry from this list in the stage that builds the route.
  */
-export const UNBUILT_ROUTES: readonly string[] = ['/cv', '/projects', '/gallery', '/archive'];
+export const UNBUILT_ROUTES: readonly string[] = ['/cv'];

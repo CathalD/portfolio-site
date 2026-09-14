@@ -17,25 +17,30 @@ signing in to Vercel. An AI session cannot and should not do it.
    - Framework Preset: **Astro**
    - Build Command: `npm run build`
    - Output Directory: `dist`
-   - Install Command: `npm install`
+   - Install Command: `npm ci --include=optional`
 
    If any of those are blank or different, set them to the above.
 
 5. Click **Deploy** and wait a minute or two.
 
-You will get a URL like `portfolio-site-xxxx.vercel.app`. The site is live at
-that address immediately.
+The current temporary address is
+<https://portfolio-site-phi-six-42.vercel.app/>.
 
-## Pointing cathaldoherty.ca at it
+## Pointing a future domain at it
 
 1. In the Vercel project, go to **Settings → Domains**.
-2. Add `cathaldoherty.ca` and `www.cathaldoherty.ca`.
+2. Add the domain you purchased and, if wanted, its `www` version.
 3. Vercel shows you the DNS records to create. Go to wherever the domain is
    registered and add exactly those records.
 4. Wait. DNS changes can take anywhere from a few minutes to a few hours.
 
 Vercel issues the HTTPS certificate automatically once DNS resolves. There is
 nothing to buy or install.
+
+At the same time, update `site` in `astro.config.mjs` and the `Sitemap` line
+in `public/robots.txt` to the new origin. Until then, both use the Vercel
+address on purpose. Do not change only one of these: canonical URLs, RSS and
+the sitemap must agree about the public origin.
 
 ## Publishing after that
 

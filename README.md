@@ -1,4 +1,4 @@
-# cathaldoherty.ca
+# Cathal Doherty — website
 
 The personal website and long-term work archive of Cathal Doherty,
 conservation biologist.
@@ -32,6 +32,7 @@ Everything you need is in **[`docs/`](docs/)**, written in plain prose:
 | Get the site online               | [deploying.md](docs/deploying.md)                           |
 | Fix something that is broken      | [troubleshooting.md](docs/troubleshooting.md)               |
 | Know why it was built this way    | [architecture-decisions.md](docs/architecture-decisions.md) |
+| Start adding real material        | [start-populating.md](docs/start-populating.md)             |
 
 ## Quickstart
 
@@ -69,6 +70,8 @@ fails if one of those ever reaches a published page.
 ```
 content/          Everything you write. Markdown and YAML.
   writing/          Essays, notes, teaching material
+  projects/         One folder and Markdown file per project
+  gallery/          Photograph sidecars and ignored import inbox
   pages/            Standalone pages, e.g. About
   data/             tags.yaml and other shared lists
 docs/             Documentation for you, in prose

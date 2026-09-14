@@ -1,0 +1,18 @@
+---
+/* StatusBadge — a plain-language project state, used on project cards and details. */
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  status: CollectionEntry<'projects'>['data']['status'];
+}
+
+const { status } = Astro.props;
+const labels = {
+  'taking-off': 'Taking off',
+  'in-progress': 'In progress',
+  completed: 'Completed',
+  archived: 'Archived',
+} as const;
+---
+
+<span class="font-sans text-sm text-ink-muted">{labels[status]}</span>

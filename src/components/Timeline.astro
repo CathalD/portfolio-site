@@ -1,0 +1,40 @@
+---
+/* Timeline — archive entries grouped by year, used on the archive routes. */
+import type { ArchiveEntry } from '../lib/archive.ts';
+import { archiveYears } from '../lib/archive.ts';
+
+interface Props {
+  entries: ArchiveEntry[];
+  linkYears?: boolean;
+}
+
+const { entries, linkYears = true } = Astro.props;
+const years = archiveYears(entries);
+---
+
+<div class="space-y-12">
+  {
+    years.map((year) => (
+      <section aria-labelledby={`year-${year}`}>
+        <h2 id={`year-${year}`} class="border-b border-rule pb-3 text-2xl font-semibold">
+          {linkYears && year !== 0 ? <a href={`/archive/${year}/`}>{year}</a> : year || 'Undated'}
+        </h2>
+        <ol class="mt-5 space-y-5 border-l border-rule-strong pl-5">
+          {entries
+            .filter((entry) => entry.year === year)
+            .map((entry) => (
+              <li>
+                <span class="font-sans text-sm text-ink-muted">{entry.type}</span>
+                <a href={entry.href} class="ml-3 font-semibold">
+                  {entry.title}
+                </a>
+                {entry.archived && (
+                  <span class="ml-3 font-sans text-sm text-ink-muted">Archived</span>
+                )}
+              </li>
+            ))}
+        </ol>
+      </section>
+    ))
+  }
+</div>

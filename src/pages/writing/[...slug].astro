@@ -11,6 +11,8 @@ import { render, type CollectionEntry } from 'astro:content';
 import ProseLayout from '../../layouts/ProseLayout.astro';
 import { getPublished } from '../../lib/content.ts';
 import { readingTime } from '../../lib/reading-time.ts';
+import Tag from '../../components/Tag.astro';
+import { getTags } from '../../lib/taxonomy.ts';
 
 export async function getStaticPaths() {
   const entries = await getPublished('writing');
@@ -38,6 +40,7 @@ const CATEGORY_LABELS: Record<CollectionEntry<'writing'>['data']['category'], st
 
 const { title, summary, category, publishedAt, updatedAt, substackUrl, formerTitles, draft } =
   entry.data;
+const definitions = getTags();
 ---
 
 <ProseLayout
@@ -51,6 +54,16 @@ const { title, summary, category, publishedAt, updatedAt, substackUrl, formerTit
   noindex={draft}
 >
   <Content />
+
+  {
+    entry.data.tags.length > 0 && (
+      <div slot="after-body" class="mt-10 flex flex-wrap gap-x-4 gap-y-2 border-t border-rule pt-6">
+        {entry.data.tags.map((slug) => (
+          <Tag slug={slug} definitions={definitions} />
+        ))}
+      </div>
+    )
+  }
 
   {
     substackUrl && (

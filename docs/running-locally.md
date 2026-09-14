@@ -52,7 +52,7 @@ Press <kbd>Ctrl</kbd>+<kbd>C</kbd> in the terminal to stop it.
 
 Anything with `draft: true` in its frontmatter, and anything whose filename
 starts with `_fixture-`, appears at <http://localhost:4321> and does not appear
-on cathaldoherty.ca. That is on purpose: it lets you see work in progress
+on the Vercel site. That is on purpose: it lets you see work in progress
 without risking publishing it.
 
 To see exactly what the public would see:
@@ -62,8 +62,9 @@ npm run build
 npm run preview
 ```
 
-That builds the real site and serves it at <http://localhost:4321>. Drafts will
-be missing, which is correct.
+That builds the real site, including its search index, and serves it at
+<http://localhost:4321>. Drafts will be missing, which is correct. Search only
+works in this built preview, not the development server.
 
 ## Checking your work
 

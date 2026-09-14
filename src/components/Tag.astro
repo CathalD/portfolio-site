@@ -1,0 +1,13 @@
+---
+/* Tag — a canonical taxonomy link used by project, writing and gallery pages. */
+import { tagLabel, type TagDefinition } from '../lib/taxonomy.ts';
+
+interface Props {
+  slug: string;
+  definitions: TagDefinition[];
+}
+
+const { slug, definitions } = Astro.props;
+---
+
+<a href={`/tags/${slug}/`} class="font-sans text-sm text-accent">{tagLabel(slug, definitions)}</a>

@@ -1,0 +1,23 @@
+---
+/* ProjectCard — project summary used by the index, home, and tag hubs. */
+import type { CollectionEntry } from 'astro:content';
+import StatusBadge from './StatusBadge.astro';
+
+interface Props {
+  entry: CollectionEntry<'projects'>;
+}
+
+const { entry } = Astro.props;
+---
+
+<article class="border-b border-rule pb-8">
+  <h3 class="text-xl font-semibold tracking-tight text-ink">
+    <a href={`/projects/${entry.id}/`}>{entry.data.title}</a>
+  </h3>
+  <p class="mt-2 flex flex-wrap gap-x-3 font-sans text-sm text-ink-muted">
+    <span>{entry.data.year}{entry.data.endYear ? `–${entry.data.endYear}` : ''}</span>
+    <StatusBadge status={entry.data.status} />
+    {entry.data.draft && <span>Draft</span>}
+  </p>
+  <p class="mt-3 max-w-[var(--measure)] text-ink-muted">{entry.data.summary}</p>
+</article>

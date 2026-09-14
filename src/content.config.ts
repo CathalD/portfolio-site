@@ -149,4 +149,61 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { writing, pages };
+/* The folder, not index.md, is the permanent project slug. */
+const projects = defineCollection({
+  loader: glob({
+    base: './content/projects',
+    pattern: '**/index.md',
+    generateId: ({ entry }) => entry.replace(/\/index\.md$/, ''),
+  }),
+  schema: z
+    .object({
+      title: z.string().min(1),
+      summary: z.string().min(1),
+      status: z.enum(['taking-off', 'in-progress', 'completed', 'archived']),
+      year: z.number().int().min(1900).max(2200),
+      endYear: z.number().int().min(1900).max(2200).optional(),
+      duration: z.string().optional(),
+      tags,
+      featured: z.boolean().default(false),
+      heroImage,
+      heroAlt,
+      relatedProjects: z.array(z.string()).optional(),
+      relatedWriting: z.array(z.string()).optional(),
+      references,
+      publishedAt: z.coerce.date().optional(),
+      updatedAt: z.coerce.date().optional(),
+      formerTitles: z.array(z.string()).optional(),
+      draft: z.boolean().default(true),
+    })
+    .superRefine(checkHeroAlt),
+});
+
+/* Gallery sidecars are authored after images are ingested. */
+const gallery = defineCollection({
+  loader: glob({ base: './content/gallery', pattern: '**/*.md' }),
+  schema: z.object({
+    title: z.string().min(1),
+    alt: z.string().min(1),
+    caption: z.string().optional(),
+    mediaType: z.literal('image'),
+    src: z.string().min(1),
+    capturedAt: z.coerce.date().optional(),
+    camera: z.string().optional(),
+    lens: z.string().optional(),
+    focalLength: z.string().optional(),
+    aperture: z.string().optional(),
+    shutterSpeed: z.string().optional(),
+    iso: z.number().int().optional(),
+    drone: z.string().optional(),
+    species: z.string().optional(),
+    location: z.string().optional(),
+    coordinates: z.string().optional(),
+    project: z.string().optional(),
+    season: z.string().optional(),
+    tags,
+    draft: z.boolean().default(true),
+  }),
+});
+
+export const collections = { writing, pages, projects, gallery };

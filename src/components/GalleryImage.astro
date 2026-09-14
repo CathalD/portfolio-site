@@ -1,0 +1,28 @@
+---
+/* GalleryImage — responsive derivatives from the ingest script, with a plain-image fallback. */
+import { mediaUrl, responsiveSet } from '../lib/media.ts';
+
+interface Props {
+  src: string;
+  alt: string;
+  sizes: string;
+  loading?: 'eager' | 'lazy';
+  class?: string;
+}
+
+const { src, alt, sizes, loading = 'lazy', class: className } = Astro.props;
+const avif = responsiveSet(src, 'avif');
+const webp = responsiveSet(src, 'webp');
+---
+
+<picture>
+  {avif && <source type="image/avif" srcset={avif} sizes={sizes} />}
+  <img
+    src={mediaUrl(src)}
+    srcset={webp}
+    sizes={webp ? sizes : undefined}
+    alt={alt}
+    loading={loading}
+    class={className}
+  />
+</picture>
